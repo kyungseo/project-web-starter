@@ -1,0 +1,80 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<th:block th:fragment="modalFragment">
+  <!-- Begin Common Modal -->
+
+  <!-- Common Modal START -->
+
+  <!-- confirmModal -->
+  <div class="modal fade text-center" id="confirmModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <span id="confirmText"></span>
+        </div>
+
+        <div class="modal-footer">
+          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- confirmDeleteModal -->
+  <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+          </button>
+          <h4 class="modal-title custom_align" id="Heading">삭제 확인!</h4>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger">
+            <span class="glyphicon glyphicon-warning-sign"></span>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span id="confirmDeleteText"></span>
+          </div>
+        </div>
+        <div class="modal-footer ">
+          <a id="yesDeleteBtn" type="button" class="btn btn-primary">
+            <span class="glyphicon glyphicon-ok-sign"></span> 예
+          </a>
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            <span class="glyphicon glyphicon-remove"></span> 아니오
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Common Modal -->
+</th:block>

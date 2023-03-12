@@ -1,0 +1,164 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+        layout:decorate="~{layout/fancysidebar}">
+
+<head>
+  <title th:utext="#{label.form.loginTitle}">Title</title>
+
+  <style type="text/css">
+    .wrapper { width:500px;margin-left:auto;margin-right:auto }
+    label { padding-left:0 !important }
+  </style>
+</head>
+
+<th:block layout:fragment="content">
+  <!-- Begin Page Content -->
+
+  <!-- Container START -->
+  <div class="col-md-12">
+
+    <h2 id="menuTitle">로그인</h2>
+
+    <div th:if="${message != null}" class="alert alert-info" th:utext="${message}">message</div>
+    <div th:if="${error != null}" class="alert alert-danger" th:utext="${session[SPRING_SECURITY_LAST_EXCEPTION]}">error</div>
+    <!-- Test 코드 실행에 필요한 라인... 주석 풀지 말 것
+    <h1 th:utext="#{label.form.loginTitle}">Header</h1>
+    -->
+
+    <br />
+    <div class="row wrapper">
+
+      <!-- Form START -->
+      <form name='f' action="/view/common/sec/login" method='POST' onsubmit="return formValidate();">
+        <span id="welcometext">&nbsp;</span>
+
+        <br /><br />
+        <label class="col-sm-4" th:utext="#{label.form.loginEmail}">Email</label>
+        <span class="col-sm-8"><input class="form-control" type='text' name='username' value=''/></span>
+
+        <br/><br/>
+        <label class="col-sm-4" th:utext="#{label.form.loginPass}">password</label>
+        <span class="col-sm-8"><input class="form-control" type='password' name='password' /></span>
+
+        <br/><br/>
+        <label class="col-sm-4" th:utext="#{label.form.login2fa}">Google Authenticator Verification Code</label>
+        <span class="col-sm-8"><input class="form-control" type='text' name='code' /></span>
+
+        <div class="clearfix"></div>
+        <br/>
+        <label  th:utext="#{label.form.rememberMe}"> Remember Me</label>
+        <input type="checkbox" name="remember-me" />
+
+        <br/><br/>
+        <input class="btn btn-primary" name="submit" type="submit" th:value="#{label.form.submit}" />
+      </form>
+      <!-- Form END -->
+
+      <br /><br />
+      <a class="btn btn-default" th:href="@{/view/common/sec/registration}" th:utext="#{label.form.loginSignUp}">signup</a>
+      <a class="btn btn-default" th:href="@{/view/common/sec/forgetPassword}" th:utext="#{sec.message.resetPassword}">reset</a>
+      <!--/*
+      <a class="btn btn-default" th:href="@{/view/common/sec/registrationCaptcha}" th:utext="#{label.form.loginSignUpCaptcha}">captcha signup</a><br/><br/>
+      <a class="btn btn-default" th:href="@{/view/common/sec/registrationReCaptchaV3}" th:utext="#{label.form.loginSignUpReCaptchaV3}">recaptcha v3 signup</a><br/><br/>
+      */-->
+    </div>
+
+  </div>
+  <!-- Container END -->
+
+  <script th:inline="javascript">
+
+    // Action URL 정의
+    var actionApiUrl = '/api/v1/auth/signin';
+
+    //============================================================================
+    // 페이지에서 구현해야할 필수 Fuction들
+    //============================================================================
+
+    // 초기화 함수
+    var fnInitialize = function() {
+      // 페이지 Title 변경
+      $("#menuTitle").text(KSM.application.menus.getMenu('comSecLogin').title);
+
+      displayUsername();
+    }
+
+    // 이벤트 핸들링
+    var fnHandleEvents = function() {
+      //
+    }
+
+    // 후처리 함수
+    var fnFinalize = function() {
+      // 필요시 추가
+    }
+
+    //============================================================================
+    // API(Ajax) Call & Callback
+    //============================================================================
+
+    //============================================================================
+    // Custom Functions
+    //============================================================================
+
+    function formValidate() {
+      if (document.f.username.value == "" && document.f.password.value == "") {
+        alert(/*[[#{sec.message.username} + #{sec.message.password}]]*/);
+        document.f.username.focus();
+        return false;
+      }
+      if (document.f.username.value == "") {
+        alert(/*[[#{sec.message.username}]]*/);
+        document.f.username.focus();
+        return false;
+      }
+      if (document.f.password.value == "") {
+        alert(/*[[#{sec.message.password}]]*/);
+        document.f.password.focus();
+        return false;
+      }
+    }
+
+    function getCookie(name) {
+      return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=')
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r
+      }, '');
+    }
+
+    function displayUsername() {
+      var username = getCookie('welcome');
+      if (username) {
+        document.getElementById("welcometext").innerHTML = "Welcome " + username + "!";
+      }
+    }
+
+  </script>
+
+  <!-- End Page Content -->
+</th:block>
+
+</html>

@@ -1,0 +1,46 @@
+<form id='myupload' action='http://localhost:8080/uploadSign' method='post' enctype='multipart/form-data'>
+  <div class="demo">
+    <div class="btn">
+      <span>XXXXX</span>
+      <input id="fileupload" type="file" name="file1"></div>
+    <div class="progress">
+      <span class="bar"></span>
+      <span class="percent">0%</span></div>
+    <div class="files"></div>
+    <div class="showimg"></div>
+  </div>
+  <input type="submit" onclick="gosubmit2()" /></form>
+<script src="https://cdn.bootcss.com/jquery/1.6.4/jquery.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery.form/4.1.0/jquery.form.min.js"></script>
+<script type="text/javascript">var bar = $('.bar');
+  var percent = $('.percent');
+  var showimg = $('.showimg');
+  var progress = $('.progress');
+  var files = $('.files');
+  var btn = $('.btn span');
+  function gosubmit2() {
+    $("#myupload").ajaxSubmit({
+      dataType: 'json',
+      beforeSend: function() {
+        showimg.empty();
+        progress.show();
+        var percentVal = '0%';
+        bar.width(percentVal);
+        percent.html(percentVal);
+        btn.html('xxxxx');
+      },
+      uploadProgress: function(event, position, total, percentComplete) {
+        var percentVal = percentComplete + '%';
+        bar.width(percentVal);
+        percent.html(percentVal);
+      },
+      success: function(data) {
+        alert(data.name + "," + data.pic + "," + data.size);
+      },
+      error: function(xhr) {
+        btn.html('xxxxxx');
+        bar.width('0');
+        files.html(xhr.responseText);
+      }
+    });
+  }</script>

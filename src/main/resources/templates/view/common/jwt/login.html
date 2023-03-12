@@ -1,0 +1,358 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/fancysidebar}">
+
+<th:block layout:fragment="content">
+  <!-- Begin Page Content -->
+
+  <!-- Container START -->
+  <div class="col-lg-8 col-lg-offset-2">
+
+      <h2 id="menuTitle">로그인</h2>
+
+      <form id="login_form" onsubmit="return false;" autocomplete="off">
+          <fieldset>
+              <div class="bx_login">
+                  <dl>
+                      <dt>아이디 (Email 주소)</dt>
+                      <dd class="id">
+                          <input type="text" class="tInput" name="email" id="email" value="user@company.com" placeholder="아이디(Email)를 입력하세요." autocomplete="off" />
+                      </dd>
+                  </dl>
+                  <dl>
+                      <dt>비밀번호</dt>
+                      <dd class="pass">
+                          <input type="password" class="tInput" name="password" id="password" placeholder="비밀번호를 입력하세요." autocomplete="off" />
+                  </dl>
+                  <p class="BtnLogin" id="btnLogin">
+                      <input type="button" id="btn_login" class="btn_login" value="로그인" alt="로그인" />
+                  </p>
+                  <!--/*
+                  <p class="new_l">
+                      <span>
+                          <input type="checkbox" class="i_Cb" id="loginChkBox" name="loginChkBox" />
+                          <label for="loginChkBox">자동로그인</label>
+                      </span>
+                  </p>
+                  */-->
+              </div>
+          </fieldset>
+          <input type="hidden" id="device_id" name="device_id" value="">
+          <input type="hidden" id="device_type" name="device_type" value="">
+      </form>
+
+  </div>
+  <!-- Container END -->
+
+  <script th:inline="javascript">
+
+    // Action URL 정의
+    var authenticationsApiUrl = '/api/v1/auth/signin';
+
+    //============================================================================
+    // 페이지에서 구현해야할 필수 Fuction들
+    //============================================================================
+
+    // 초기화 함수
+    var fnInitialize = function() {
+      // 이미 로그인 되어 있으면, 홈페이지로 이동
+      //if (USER_INFO.isLogin()) {
+      //    location.href = KSM.application.menus.getMenu('userHome').htmlUrl;
+      //}
+
+      // 페이지 Title 변경
+      $("#menuTitle").text(KSM.application.menus.getMenu('secLogin').title);
+
+      // 사용자 Device 정보를 hidden 값에 설정해 둔다.
+      getDeviceInfo();
+    }
+
+    // 이벤트 핸들링
+    var fnHandleEvents = function() {
+      // 로그인 함수 호출
+      $('#btn_login').click(function(e) {
+        e.preventDefault();
+        fnJwtLogin();
+      });
+
+      // 엔터 시 - 로그인 함수 호출
+      $('#login_form').submit(function(e) {
+        e.preventDefault();
+        fnJwtLogin();
+      });
+
+      // Id 입력 key 이벤트
+      $('#email').bind('keypress', function(event) {
+        KSM_UTIL.keyEventCatch(event, '13', fnJwtLogin);
+      });
+
+      // Pass 입력 key 이벤트
+      $('#password').bind('keypress', function(event) {
+        KSM_UTIL.keyEventCatch(event, '13', fnJwtLogin);
+      });
+    }
+
+    // 후처리 함수
+    var fnFinalize = function() {
+      // 필요시 추가
+    }
+
+    //============================================================================
+    // API(Ajax) Call & Callback
+    //============================================================================
+
+    // 로그인 함수
+    var fnJwtLogin = function() {
+      var vEmail = $('#email').val();
+      var vPassword = $('#password').val();
+      var vDeviceId = $('#device_id').val();
+      var vDeviceType = $('#device_type').val();
+
+      // 사용자 ID 확인
+      if (vEmail === '') {
+        console.log("vEmail: " + vEmail);
+        KSM_DIALOG.validate('ID를 입력하여 주십시오.');
+        $('#email').focus();
+        return false;
+      }
+
+      // 사용자 비밀번호 확인
+      if (vPassword === '') {
+        KSM_DIALOG.validate('비밀번호를 입력하여 주십시오.');
+        $('#password').focus();
+        return false;
+      }
+
+      $('#btn_login').css('background-color','#337ab7');
+
+      // Parameter(loginRequest) 스펙
+      //  {
+      //    "email": "string",
+      //    "password": "string",
+      //    "deviceInfo": {
+      //      "deviceId": "string",
+      //      "deviceType": "string"
+      //    }
+      //  }
+      var jqxhr = KSM_CORE.ajax({
+        url      : authenticationsApiUrl,
+        type     : KSM_CONST.HTTP_POST_METHOD,
+        data     : {
+          "email"      : vEmail,
+          "password"   : vPassword,
+          deviceInfo   : {
+            "deviceId"   : vDeviceId,
+            "deviceType" : vDeviceType
+          }
+        },
+        jwtToken : false,
+        success  : fnJwtLoginCallBack
+      });
+    }
+
+    // 로그인 성공 함수 콜백
+    // data 스펙
+    //    private String accessToken;
+    //    private String refreshToken;
+    //    private String tokenType;
+    //    private Long expiryDuration;
+
+    var fnJwtLoginCallBack = function(data) {
+      /*
+      if ($('[name=loginChkBox]').is(':checked')) {
+        // ID 저장이 체크되었다면, 로컬 스토리지 저장
+        KSM_STORAGE.storage({action:'save', key:'token', value:data.token});
+        KSM_STORAGE.storage({action:'save', key:'loginDate', value:KSM_UTIL.getTodayDate()});
+        KSM_STORAGE.storage({action:'save', key:'keepLogin', value:$('[name=loginChkBox]').is(':checked') === false ? 'N' : 'Y'});
+        KSM_STORAGE.objectSaveLocalStorage(data.clientStorage);
+      }
+      else {
+        // 그렇지 않다면 세션 스토리지 저장하여 브라우저(APP)이 열려 있는 동안만 저장되도록 한다.
+        KSM_STORAGE.storage({action:'save', key:'token', value:data.token, storage:'session'});
+        KSM_STORAGE.storage({action:'save', key:'loginDate', value:KSM_UTIL.getTodayDate(), storage:'session'});
+        // TODO keepLogin 저장은 불필요함. 삭제할 것
+        KSM_STORAGE.storage({action:'save', key:'keepLogin', value:$('[name=loginChkBox]').is(':checked') === false ? 'N' : 'Y', storage:'session'});
+        KSM_STORAGE.objectSaveSessionStorage(data.clientStorage);
+      }
+      */
+
+      // local storage에 저장
+      KSM_STORAGE.storage({action: 'save', key: 'accessToken',    value: data.accessToken});
+      KSM_STORAGE.storage({action: 'save', key: 'refreshToken',   value: data.refreshToken});
+      KSM_STORAGE.storage({action: 'save', key: 'roles',          value: data.roles});
+      KSM_STORAGE.storage({action: 'save', key: 'expiryDuration', value: data.expiryDuration});
+      KSM_STORAGE.storage({action: 'save', key: 'loginDate',      value: KSM_UTIL.getTodayDate()});
+
+      // for debugging... --------------------------------------------------------
+      /*
+      console.log("localStorage: ");
+      var _secret_key_ = '_ksm_secret_key_';
+
+      for (const key in localStorage) {
+        if ('expiryDuration' !== key) {
+          console.log(`${key}: ${KSM_CRYPTO.decryptByDES(localStorage.getItem(key), _secret_key_)}`);
+        }
+        else {
+          console.log(`${key}: ${localStorage.getItem(key)}`);
+        }
+      }
+
+      //const keys = Object.keys(localStorage)
+      //for (let key of keys) {
+      //  console.log(`${key}: ${localStorage.getItem(key)}`);
+      //}
+      */
+      // end debugging... ---------------------------------------------------------
+
+      // 화면이동
+      if (USER_INFO.hasRole(KSM_ROLES.ADMIN)) {
+        location.href = KSM.application.menus.getMenu('adminHome').htmlUrl + "?token=" + localStorage.getItem("accessToken");
+      }
+      else {
+        location.href = KSM.application.menus.getMenu('userHome').htmlUrl + "?token=" + localStorage.getItem("accessToken");
+      }
+    }
+
+    //============================================================================
+    // Custom Functions
+    //============================================================================
+
+    var getDeviceInfo = function() {
+        // FIXME: 비동기 이므로 값을 바로 받아올 수 없는 문제를 해결할 것
+        // 임시로 hidden 값에 세팅해 두고, 폼 전송시 포함하게끔 함
+        new Fingerprint2().get(function(result, components) {
+          console.log(result) // a hash, representing your device fingerprint
+          console.log(components) // an array of FP components
+          $('#device_id').val(result);
+          $('#device_type').val(components[0].value);
+        });
+        // result 예시:
+        //   da087661ee0ba4be03473602c6d69410
+        //
+        // components 예시:
+        //   {key: 'user_agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb…KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'}
+        //   {key: 'language', value: 'ko-KR'}
+        //   {key: 'color_depth', value: 24}
+        //   {key: 'device_memory', value: 8}
+        //   {key: 'hardware_concurrency', value: 8}
+        //   {key: 'resolution', value: Array(2)}
+        //   {key: 'available_resolution', value: Array(2)}
+        //   {key: 'timezone_offset', value: -540}
+        //   {key: 'session_storage', value: 1}
+        //   {key: 'local_storage', value: 1}
+        //   {key: 'indexed_db', value: 1}
+        //   {key: 'open_database', value: 1}
+        //   {key: 'cpu_class', value: 'unknown'}
+        //   {key: 'navigator_platform', value: 'Win32'}
+        //   {key: 'regular_plugins', value: Array(5)}
+        //   {key: 'canvas', value: 'canvas winding:yes~canvas fp:data:image/png;base64…QIECAAAECBAgQIFBS4F+mCKFeLdkEngAAAABJRU5ErkJggg=='}
+        //   {key: 'webgl', value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwA…bgl fragment shader low int precision rangeMax:30'}
+        //   {key: 'webgl_vendor', value: 'Google Inc. (Intel)~ANGLE (Intel, Intel(R) Iris(R) Xe Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)'}
+        //   {key: 'adblock', value: false}
+        //   {key: 'has_lied_languages', value: false}
+        //   {key: 'has_lied_resolution', value: false}
+        //   {key: 'has_lied_os', value: false}
+        //   {key: 'has_lied_browser', value: false}
+        //   {key: 'touch_support', value: Array(3)}
+        //   {key: 'js_fonts', value: Array(48)}
+        //   {key: 'audio_fp', value: '124.04347527516074'}
+    }
+
+    // Get Browser FingerPrinting: https://github.com/fingerprintjs/fingerprintjs
+    var getDeviceId = function() {
+      // Initialize the agent at application startup.
+      const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
+        .then(FingerprintJS => FingerprintJS.load());
+
+      // Get the visitor identifier when you need it.
+      return fpPromise
+        .then(fp => fp.get())
+        .then(result => {
+          // This is the visitor identifier:
+          const visitorId = result.visitorId;
+          console.log('getDeviceId() > visitor identifier: ' + visitorId);
+          return visitorId;
+        });
+    }
+
+    // ua-parser-0.7.33/js/ua-parser.min.js 사용
+    var getDeviceType = function() {
+      // for debugging...
+      //KSM_CORE.logDebugInfo();
+
+      var parser = new UAParser();
+      var result = parser.getResult();
+      var deviceType =
+        result.browser.name + '(' + result.browser.version + '), ' +
+        result.os.name + '(' + result.os.version + ')';
+
+      console.log('>> DeviceType: ' + deviceType);
+      return deviceType;
+    }
+
+  </script>
+
+  <!--/*
+  <script th:inline="javascript">
+    $(function() {
+      "use strict";
+
+      // Sign In 버튼 클릭 이벤트
+      $("#btn_login").click(function() {
+      	$.ajax({
+          type: "post",
+          url: "/api/v1/auth/signin",
+          data: JSON.stringify( $("#loginForm").serializeObject() ),
+          contentType: "application/json;charset=UTF-8",
+          success: function(result, status, xhr) {
+            const jwt = xhr.getResponseHeader("Authorization");
+            console.log(jwt);
+            sessionStorage.setItem("jwt", jwt);
+          },
+          error: function(xhr, status, err) {
+            const msg = "인증에 실패하였습니다";
+            if (xhr.responseJSON) {
+              msg += ":" + xhr.responseJSON.errorMessage;
+            }
+            alert(msg);
+          }
+      	});
+      });
+
+      $("#userPage").click(function(){
+      	location.href = "/view/user/userHome?token=" + sessionStorage.getItem("jwt");
+      });
+
+      $("#adminPage").click(function(){
+      	location.href = "/view/admin/adminHome?token=" + sessionStorage.getItem("jwt");
+      });
+
+    });
+  </script>
+  */-->
+
+  <!-- End Page Content -->
+</th:block>
+
+
+</html>

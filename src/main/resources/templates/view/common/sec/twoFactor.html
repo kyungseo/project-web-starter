@@ -1,0 +1,132 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+        layout:decorate="~{layout/fancysidebar}">
+
+<th:block layout:fragment="content">
+  <!-- Begin Page Content -->
+
+  <!-- Container START -->
+  <div class="col-md-12">
+
+    <h2 id="menuTitle">페이지 타이틀</h2>
+
+    <div id="disable2FA" th:if="${#authentication.principal.using2FA}">
+      2단계 인증을 사용 중입니다. <a href="#" class="btn btn-primary" onclick="disable2FA()">2FA 비활성화</a>
+    </div>
+
+    <div id="enable2FA" th:if="${! #authentication.principal.using2FA}">
+      2단계 인증을 사용하고 있지 않습니다. <a href="#" class="btn btn-primary" onclick="enable2FA()">2FA 활성화</a>
+    </div>
+
+
+    <br/>
+    <div id="qr" style="display:none;">
+      <p>휴대폰에서 Google Authenticator 앱을 사용하여 다음 바코드를 스캔하시기 바랍니다.<p>
+      <p class="error">이 과정을 건너뛰면 다음에 로그인할 수 없습니다!<p>
+      <p>취소하려면 현재 페이지를 <a class="btn btn-primary" th:href="@{/view/common/sec/twoFactor}">새로고침</a>한 후, <strong>[2FA 비활성화]</strong> 버튼을 누르세요.<p>
+      <p>
+        <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a> 또는
+        <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605">iPhone</a>
+      </p>
+    </div>
+
+  </div>
+  <!-- Container END -->
+
+  <script th:inline="javascript">
+
+    // Action URL 정의
+    var actionApiUrl  = [[@{/api/v1/user/sec/update/2fa}]];
+
+    //============================================================================
+    // 페이지에서 구현해야할 필수 Fuction들
+    //============================================================================
+
+    // 초기화 함수
+    var fnInitialize = function() {
+      // 페이지 Title 변경
+      $("#menuTitle").text(KSM.application.menus.getMenu('comSec2fa').title);
+    }
+
+    // 이벤트 핸들링
+    var fnHandleEvents = function() {
+      //
+    }
+
+    // 후처리 함수
+    var fnFinalize = function() {
+      // 필요시 추가
+    }
+
+    //============================================================================
+    // API(Ajax) Call & Callback
+    //============================================================================
+
+    //============================================================================
+    // Custom Functions
+    //============================================================================
+
+    function enable2FA(){
+      set2FA(true);
+    }
+
+    function disable2FA(){
+      set2FA(false);
+    }
+
+    function set2FA(use2FA){
+      var jqxhr = KSM_CORE.ajax({
+        url           : actionApiUrl,
+        type          : KSM_CONST.HTTP_POST_METHOD,
+        data          : { use2FA: use2FA },
+        success       : function( data ) {
+          if (use2FA) {
+            $("#qr").append('<img src="' + data.message + '" />').show();
+            $("#enable2FA").hide();
+          } else {
+            window.location.reload();
+          }
+        }
+      });
+
+      /*
+      $.post( actionApiUrl, { use2FA: use2FA } , function( data ) {
+        if (use2FA) {
+          $("#qr").append('<img src="' + data.message + '" />').show();
+          $("#enable2FA").hide();
+        } else {
+          window.location.reload();
+        }
+      });
+      */
+    }
+
+  </script>
+
+  <!-- End Page Content -->
+</th:block>
+
+</html>

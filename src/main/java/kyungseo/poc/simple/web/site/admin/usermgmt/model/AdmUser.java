@@ -1,0 +1,69 @@
+/* ============================================================================
+ * [ Development Templates based on Spring Boot ]
+ * ----------------------------------------------------------------------------
+ * Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============================================================================
+ * Author     Date            Description
+ * --------   ----------      -------------------------------------------------
+ * Kyungseo   2023-03-02      initial version
+ * ========================================================================= */
+
+package kyungseo.poc.simple.web.site.admin.usermgmt.model;
+
+/**
+ * @author 박경서 (Kyungseo.Park@gmail.com)
+ * @version 1.0
+ */
+import java.time.LocalDateTime;
+import java.util.Collection;
+
+import org.jboss.aerogear.security.otp.api.Base32;
+
+import kyungseo.poc.simple.web.security.persistence.entity.ds1.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@ToString
+public class AdmUser {
+
+    private Long id;
+    private String membername;
+    private String email;
+    private String password;
+    private Integer age;
+    private String phoneNumber;
+    private String country;
+    private String birthdate;
+    private Boolean enabled;
+    private Collection<Role> roles;
+    private Boolean isUsing2FA;
+    private String secret;
+    private LocalDateTime regDate;
+    private LocalDateTime modDate;
+
+    public AdmUser() {
+        super();
+        this.secret = Base32.random();
+        this.enabled = false;
+    }
+
+}

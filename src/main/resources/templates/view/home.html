@@ -1,0 +1,206 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+        layout:decorate="~{layout/circulartabs}">
+
+<th:block layout:fragment="content">
+  <!-- Begin Page Content -->
+
+  <div class="tab-content">
+
+    <div class="tab-pane fade in active" id="home">
+      <h3 class="head text-center">
+        Welcome to KYUNGSEO.PoC<sup>™</sup> <span style="color: #f48260;">♥</span>
+      </h3>
+      <h4 class="text-center" id="menuTitle">Project Web Starter Template (Simple Web)</h4>
+      <p class="text-center">
+        --------------------------------------------------------
+        --------------------------------------------------------
+      <p/>
+      <p class="narrow text-center">
+        Project Web Starter는 중소규모의 개발프로젝트 실무에서 즉시 활용
+        <br/>하는 것을 목적으로 구현된 개발 템플릿입니다. 사이트에 로그인하기
+        <br/>위해서는 관리자의 경우 'admin@company.com', 일반 사용자의 경우
+        <br/>'user001@company.com'를 ID로, 비번은 'password'를 입력하세요.
+      </p>
+      <p class="text-center">
+        <a href="/swagger-ui/index.html" class="btn btn-success btn-outline-rounded green">
+          API Home <span style="margin-left: 10px;" class="glyphicon glyphicon-send"></span>
+        </a>
+        <a href="/h2" class="btn btn-success btn-outline-rounded green">
+          H2 Console <span style="margin-left: 10px;" class="glyphicon glyphicon-send"></span>
+        </a>
+        <a href="/view/user/home" class="btn btn-success btn-outline-rounded green">
+          User Home <span style="margin-left: 10px;" class="glyphicon glyphicon-send"></span>
+        </a>
+      </p>
+    </div>
+
+    <div class="tab-pane fade" id="profile">
+      <h3 class="head text-center">
+        Welcome to KYUNGSEO.PoC<sup>™</sup> <span style="color: #f48260;">♥</span>
+      </h3>
+      <p class="text-center">
+        --------------------------------------------------------
+        --------------------------------------------------------
+      <p/>
+      <p class="narrow text-center">
+        거울속에는소리가없오
+        저렇게까지조용한세상은참없을것이오
+        거울속에도내게귀가있오
+        내말을알아듣는딱한귀가두개나있오
+        거울속의나는왼손잡이요
+        내악수를받을줄모르는-악수를모르는왼손잽이요
+      </p>
+      <p class="text-center">
+        <a href="/swagger-ui/index.html" class="btn btn-success btn-outline-rounded green">
+          API Home <span style="margin-left: 10px;" class="glyphicon glyphicon-send"></span>
+        </a>
+      </p>
+    </div>
+
+    <div class="tab-pane fade" id="messages">
+      <h3 class="head text-center">
+        Welcome to KYUNGSEO.PoC<sup>™</sup> <span style="color: #f48260;">♥</span>
+      </h3>
+      <p class="text-center">
+        --------------------------------------------------------
+        --------------------------------------------------------
+      <p/>
+      <p class="narrow text-center">
+        벌판한복판에꽃나무하나가있소.
+        근처(近處)에는꽃나무가하나도없소
+        꽃나무는제가생각하는꽃나무를 열심(熱心)으로생각하는것처럼열심으로꽃을피워가지고섰소.
+        꽃나무는제가생각하는꽃나무에게갈수없소.
+        나는막달아났소.
+        한꽃나무를위하여그러는것처럼나는참그런이상스러운흉내를 내었소.
+      </p>
+      <p class="text-center">
+        <a href="/h2" class="btn btn-success btn-outline-rounded green">
+          H2 Console <span style="margin-left: 10px;" class="glyphicon glyphicon-send"></span>
+        </a>
+      </p>
+    </div>
+
+    <div class="tab-pane fade" id="settings">
+      <h3 class="head text-center">
+        Welcome to KYUNGSEO.PoC<sup>™</sup> <span style="color: #f48260;">♥</span>
+      </h3>
+      <p class="text-center">
+        --------------------------------------------------------
+        --------------------------------------------------------
+      <p/>
+      <p class="narrow text-center">
+        나의 아버지가 나의 곁에서 조을 적에 나는 나의 아버지가 되고도 나는 나의 아버지의 아버지가 되고,
+        그런데도 나의 아버지는 나의 아버지대로 나의 아버지인데 어쩌자고 나는 자꾸
+        나의 아버지의 아버지의 아버지의.... 아버지가 되니 나는 왜 나의 아버지를 껑충뛰어 넘어야하는지
+        나는 왜 드디어 나와 나의 아버지와 나의 아버지의 아버지와 나의 아버지의 아버지의 아버지 노릇을
+        한꺼번에 하면서 살아야 하는 것이냐
+      </p>
+      <p class="text-center">
+        <a href="/view/user/home" class="btn btn-success btn-outline-rounded green">
+          User Home <span style="margin-left: 10px;" class="glyphicon glyphicon-send"></span>
+        </a>
+      </p>
+    </div>
+
+    <div class="tab-pane fade" id="doner">
+      <div class="text-center">
+        <i class="img-intro icon-checkmark-circle"></i>
+      </div>
+      <h3 class="head text-center">
+        thanks for staying tuned! <span style="color: #f48260;">♥</span> Kyungseo
+      </h3>
+      <p class="narrow text-center">
+        역사를하노라고 땅을파다가 커다란돌을하나끄집어내어놓 고보니도무지어디서인가 본듯한생각이들게
+        모양이생겼는데 목도들이 그것을메고나가더니 어디다갖다버리고온모양이길래 쫓아나가보니위험하기짝이없는
+        큰길가더라. 그날밤에 한소나기하였으니 필시그돌이깨끗이씻꼈을터인데 그이틀날가보니까 변괴로다
+        간데온데없더라.어떤돌이와서 그돌을업어갔을까
+      </p>
+      <p class="text-center">
+        <a href="/view/user/home" class="btn btn-success btn-outline-rounded green">
+          User Home <span style="margin-left: 10px;" class="glyphicon glyphicon-send"></span>
+        </a>
+      </p>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <script th:inline="javascript">
+
+    // Action URL 정의
+    var redirectUrl = '/redirect';
+    var userHomeUrl = '/view/user/home';
+
+    //============================================================================
+    // jQuery ready()
+    //============================================================================
+
+    $(document).ready(function() {
+      // 초기화 작업 수행
+      fnInitialize();
+
+      // 이벤트 핸들링
+      fnHandleEvents();
+
+      // 후처리 작업 수행
+      fnFinalize();
+    });
+
+    // 초기화 함수
+    var fnInitialize = function() {
+      //
+    }
+
+    // 후처리 함수
+    var fnFinalize = function() {
+      // 필요시 추가
+    }
+
+    //============================================================================
+    // Event Handling
+    //============================================================================
+
+    // 이벤트 핸들링
+    var fnHandleEvents = function() {
+      //
+    }
+
+    //============================================================================
+    // API(Ajax) Call & Callback
+    //============================================================================
+
+    //============================================================================
+    // Custom Functions
+    //============================================================================
+
+  </script>
+
+  <!-- End Page Content -->
+</th:block>
+
+</html>

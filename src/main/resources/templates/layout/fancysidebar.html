@@ -1,0 +1,337 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<!--/* Fancy Sidebar Navigation | https://bootsnipp.com/snippets/Qb83E ※ https://bootsnipp.com/tags/3.3.0 */-->
+
+<!--/* Head의 Nav 영역 */-->
+<th:block th:replace="/layout/fragments-fancysidebar/head :: headFragment"></th:block>
+
+<!--/* Script START */-->
+<script th:inline="javascript">
+
+  // 전역 변수
+  var serverContext = [[@{/}]];
+
+  // jQuery ready()
+  $(document).ready(function() {
+
+    // ========================================================================
+    // 각 페이지에서 구현해야할 필수 Fuction들
+    // ========================================================================
+
+    fnInitialize();   // 초기화 작업 수행
+    fnHandleEvents(); // 이벤트 핸들링
+    fnFinalize();     // 후처리 작업 수행
+
+    // ========================================================================
+    // TODO: 하위 Common fuction들의 경우, ks.mini(KSM_*.js)로 이동할 것!
+    // ========================================================================
+
+    // ========================================================================
+    // 사이드 Hamburger 메뉴
+    // ========================================================================
+
+    var trigger = $('.hamburger'),
+        overlay = $('.overlay'),
+        isClosed = false;
+
+    trigger.click(function () {
+      hamburger_cross();
+    });
+
+    function hamburger_cross() {
+      if (isClosed == true) {
+        overlay.hide();
+        trigger.removeClass('is-open');
+        trigger.addClass('is-closed');
+        isClosed = false;
+      }
+      else {
+        overlay.show();
+        trigger.removeClass('is-closed');
+        trigger.addClass('is-open');
+        isClosed = true;
+      }
+    }
+
+    $('[data-toggle="offcanvas"]').click(function () {
+      $('#wrapper').toggleClass('toggled');
+    });
+
+  });
+
+  // ========================================================================
+  // Client 단의 Validation Check: Validate.js 사용을 위한 공통 Function
+  // ========================================================================
+
+  validate.extend(validate.validators.datetime, {
+    parse: function(value, options) {
+      return +moment.utc(value);
+    },
+    format: function(value, options) {
+      var format = options.dateOnly ? "YYYY-MM-DD" : "YYYY-MM-DD hh:mm:ss";
+      return moment.utc(value).format(format);
+    }
+  });
+
+  // Validation 준비를 위해 Input 요소에 event listener 추가
+  var prepareFormValidation = function() {
+    for (var i = 0; i < inputs.length; ++i) {
+      inputs.item(i).addEventListener("change", function(ev) {
+        var errors = validate(mainForm, constraints) || {};
+        showErrorsForInput(this, errors[this.name])
+      });
+    }
+  }
+
+  var showErrors = function(form, errors) {
+    _.each(form.querySelectorAll("input[name], select[name]"), function(input) {
+      showErrorsForInput(input, errors && errors[input.name]);
+    });
+  }
+
+  var showErrorsForInput = function(input, errors) {
+    if (input.type === "hidden") return; // hidden 값은 건너뜀.
+
+    console.log("showErrorsForInput > [" + input.name + ": " + input.value + "]");
+    var formGroup = closestParent(input.parentNode, "form-group");
+    var messages = formGroup.querySelector(".messages");
+    resetFormGroup(formGroup, input);
+    if (errors) {
+      formGroup.classList.add("has-error");
+      _.each(errors, function(error) {
+        addError(messages, error);
+      });
+    }
+    else {
+      formGroup.classList.add("has-success");
+    }
+  }
+
+  var closestParent = function(child, className) {
+    if (!child || child == document) {
+      return null;
+    }
+    if (child.classList.contains(className)) {
+      return child;
+    }
+    else {
+      return closestParent(child.parentNode, className);
+    }
+  }
+
+  var resetFormGroup = function(formGroup, input) {
+    formGroup.classList.remove("has-error");
+    formGroup.classList.remove("has-success");
+    _.each(formGroup.querySelectorAll(".help-block.error"), function(el) {
+      el.parentNode.removeChild(el);
+      $("#"+input.id+"Error").hide();
+    });
+  }
+
+  var addError = function(messages, error) {
+    var block = document.createElement("p");
+    block.classList.add("help-block");
+    block.classList.add("error");
+    block.innerText = error;
+    // <p class="help-block error">[message]</p>
+    messages.appendChild(block);
+    messages.style.display = "block";
+  }
+
+  // ========================================================================
+  // Server 단의 Validation Check: javax.validation 및 사용자정의(Custom) 검증
+  // ========================================================================
+
+    // Server-side 검증에러 표시
+    var showServerValidationErrors = function(data) {
+      // ajax 호출로 인해 API(서버 단)에서 검증 에러 발생 시에는
+      // Client-side와 다르게 loadingEffect를 컨트롤하지 못한다.
+      // 혹시 남아있을 loadingEffect를 제거!
+      KSM_UTIL.loadingEffect(false);
+      // 검증 에러이기 때문에 화면에서 올바른 값으로 조정 후 다시 API를
+      // 요청할 수 있다. 단 이때 검증 시 사용했던 requestId가 그대로
+      // 남아 있으므로 requestId 값을 갱신해야 한다.
+      // 주의) 그렇지 않으면 중복서브밋 에러가 발생하게된다.
+      KSM.request.id = self.crypto.randomUUID(); // Double Submit 방지
+
+      var errors;
+
+      if (data.responseJSON) {
+        errors = $.parseJSON(data.responseJSON.fieldErrors);
+      }
+      else {
+        errors = $.parseJSON(data.fieldErrors);
+      }
+
+      $.each( errors, function( index, item ) {
+        if (item.field && $("#"+item.field+"Error")) {
+          $("#"+item.field+"Error").show().append(item.defaultMessage+"<br/>");
+        }
+        else {
+          $("#globalError").show().append(item.defaultMessage+"<br/>");
+        }
+      });
+
+      if (data.responseJSON) {
+        errors = $.parseJSON(data.responseJSON.errors);
+      }
+      else {
+        errors = $.parseJSON(data.errors);
+      }
+
+      $.each( errors, function( index, item ) {
+        $("#globalError").show().append(item.defaultMessage+"<br/>");
+      });
+    }
+
+  // ========================================================================
+  // DeviceInfo
+  // ========================================================================
+
+  var getDeviceInfo = function() {
+      // FIXME: 비동기 이므로 값을 바로 받아올 수 없는 문제를 해결할 것
+      // 임시로 hidden 값에 세팅해 두고, 폼 전송시 포함하게끔 함
+      new Fingerprint2().get(function(result, components) {
+        console.log(result) // a hash, representing your device fingerprint
+        console.log(components) // an array of FP components
+        $('#device_id').val(result);
+        $('#device_type').val(components[0].value);
+      });
+      // result 예시:
+      //   da087661ee0ba4be03473602c6d69410
+      //
+      // components 예시:
+      //   {key: 'user_agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb…KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'}
+      //   {key: 'language', value: 'ko-KR'}
+      //   {key: 'color_depth', value: 24}
+      //   {key: 'device_memory', value: 8}
+      //   {key: 'hardware_concurrency', value: 8}
+      //   {key: 'resolution', value: Array(2)}
+      //   {key: 'available_resolution', value: Array(2)}
+      //   {key: 'timezone_offset', value: -540}
+      //   {key: 'session_storage', value: 1}
+      //   {key: 'local_storage', value: 1}
+      //   {key: 'indexed_db', value: 1}
+      //   {key: 'open_database', value: 1}
+      //   {key: 'cpu_class', value: 'unknown'}
+      //   {key: 'navigator_platform', value: 'Win32'}
+      //   {key: 'regular_plugins', value: Array(5)}
+      //   {key: 'canvas', value: 'canvas winding:yes~canvas fp:data:image/png;base64…QIECAAAECBAgQIFBS4F+mCKFeLdkEngAAAABJRU5ErkJggg=='}
+      //   {key: 'webgl', value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwA…bgl fragment shader low int precision rangeMax:30'}
+      //   {key: 'webgl_vendor', value: 'Google Inc. (Intel)~ANGLE (Intel, Intel(R) Iris(R) Xe Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)'}
+      //   {key: 'adblock', value: false}
+      //   {key: 'has_lied_languages', value: false}
+      //   {key: 'has_lied_resolution', value: false}
+      //   {key: 'has_lied_os', value: false}
+      //   {key: 'has_lied_browser', value: false}
+      //   {key: 'touch_support', value: Array(3)}
+      //   {key: 'js_fonts', value: Array(48)}
+      //   {key: 'audio_fp', value: '124.04347527516074'}
+  }
+
+  // Get Browser FingerPrinting: https://github.com/fingerprintjs/fingerprintjs
+  var getDeviceId = function() {
+    // Initialize the agent at application startup.
+    const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
+      .then(FingerprintJS => FingerprintJS.load());
+
+    // Get the visitor identifier when you need it.
+    return fpPromise
+      .then(fp => fp.get())
+      .then(result => {
+        // This is the visitor identifier:
+        const visitorId = result.visitorId;
+        console.log('getDeviceId() > visitor identifier: ' + visitorId);
+        return visitorId;
+      });
+  }
+
+  // ua-parser-0.7.33/js/ua-parser.min.js 사용
+  var getDeviceType = function() {
+    // for debugging...
+    //KSM_CORE.logDebugInfo();
+
+    var parser = new UAParser();
+    var result = parser.getResult();
+    var deviceType =
+      result.browser.name + '(' + result.browser.version + '), ' +
+      result.os.name + '(' + result.os.version + ')';
+
+    console.log('>> DeviceType: ' + deviceType);
+    return deviceType;
+  }
+
+</script>
+<!--/* Script END */-->
+
+<body id="page-top">
+
+  <!--/* Nav
+  <th:block th:replace="/layout/fragments-fancysidebar/topnavbar :: topnavbarFragment"></th:block>
+  */-->
+
+  <!-- Wrapper START -->
+  <div id="wrapper">
+
+    <div class="overlay"></div>
+
+    <!--/* LNB 영역 (Sidebar) */-->
+    <th:block th:replace="/layout/fragments-fancysidebar/sidebar :: sidebarFragment"></th:block>
+
+    <!--/* Page Content START */-->
+    <div id="page-content-wrapper">
+      <button type="button" class="hamburger is-closed" data-toggle="offcanvas">
+        <span class="hamb-top"></span>
+        <span class="hamb-middle"></span>
+        <span class="hamb-bottom"></span>
+      </button>
+
+      <div class="container">
+        <div class="row">
+
+          <!--/* GNB 영역 (상단 Navibar) */-->
+          <th:block th:replace="/layout/fragments-fancysidebar/navbar :: navbarFragment"></th:block>
+
+          <!--/* 메인 컨텐츠 영역 */-->
+          <div layout:fragment="content" >content</div>
+
+        </div>
+      </div>
+    </div>
+    <!--/* Page Content END */-->
+
+  </div>
+  <!-- Wrapper END -->
+
+  <!--/* 공통 Modal 영역 */-->
+  <th:block th:replace="/layout/fragments-fancysidebar/modal :: modalFragment"></th:block>
+
+  <!--/* Footer 영역 */-->
+  <th:block th:replace="/layout/fragments-fancysidebar/footer :: footer"></th:block>
+
+</body>
+
+</html>

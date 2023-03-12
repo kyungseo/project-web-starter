@@ -1,0 +1,66 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<th:block th:fragment="sidebarFragment">
+    <!-- Begin SideBar -->
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+      <ul class="nav sidebar-nav">
+        <li class="sidebar-brand"><a href="/">KYUNGSEO.PoC</a></li>
+        <!--/*
+        <li><a href="/view/home" th:utext="#{label.pages.home.title}">사이트 홈</a></li>
+        */-->
+        <li sec:authorize="hasRole('ADMIN')"><a href="/view/admin/home" th:utext="#{label.pages.home.admin.title}">관리자 홈</a></li>
+        <li sec:authorize="hasRole('USER')"><a href="/view/user/home" th:utext="#{label.pages.home.user.title}">사용자 홈</a></li>
+        <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/view/admin/usermgmt/users}">사용자 관리</a></li>
+        <li sec:authorize="hasAnyRole('ADMIN','USER')"><a th:href="@{/view/common/sec/loggedUsers}">온라인 사용자 목록</a></li>
+        <!--/*
+        <li><a href="/view/common/sec/notice">알림</a></li>
+        */-->
+
+        <!--/*
+        <li><a href="/view/common/jwt/login">JWT 로그인</a></li>
+        <li><a href="/view/common/jwt/refresh">JWT Token 갱신</a></li>
+        <li><a href="/view/common/sec/login">Spring Security 로그인</a></li>
+        <li><a href="/api/v1/user/sec/logout">Spring Security 로그아웃</a></li>
+        */-->
+
+        <li sec:authorize="hasAnyRole('USER','STAFF','ADMIN')" class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">[마이 메뉴]<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li class="dropdown-header"><p th:text="${#authentication.principal.email}"></p></li>
+            <li><a href="/view/common/sec/roleHierarchy">나의 역할과 권한</a></li>
+            <li><a th:href="@{/view/common/sec/changePassword}" th:utext="#{sec.message.changePassword}">비밀번호 변경</a></li>
+            <li><a th:href="@{/view/common/sec/twoFactor}">2FA 설정</a></li>
+            <li><a th:href="@{/api/v1/user/sec/logout}" th:utext="#{label.pages.logout}">로그아웃</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="https://github.com/kyungseo/project-web-starter">[Follow me]</a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- End SideBar -->
+</th:block>

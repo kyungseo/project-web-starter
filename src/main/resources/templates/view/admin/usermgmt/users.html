@@ -1,0 +1,346 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+        layout:decorate="~{layout/fancysidebar}">
+
+<th:block layout:fragment="content">
+  <!-- Begin Page Content -->
+
+  <!-- Container START -->
+  <div class="col-md-12">
+
+    <h2 id="menuTitle">사용자 목록</h2>
+
+    <div th:if="${message != null && message.length() > 0}" class="alert alert-success alert-dismissible" role="alert">
+      [[${message}]]
+      <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <!-- Search Form START -->
+    <form id="searchForm">
+      <div class="row d-flex">
+        <div>
+          <br />
+          <div class="col-sm-3">
+            <i class="fa fa-search"></i>
+            <select form="searchForm" id="searchType" name="searchType" th:value="${searchDTO.searchType}" class="size-select">
+              <option value="n" th:selected="${searchDTO.searchType == 'n'}">성명</option>
+              <option value="e" th:selected="${searchDTO.searchType == 'e'}">이메일</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <input id="searchKeyword" name="searchKeyword" type="search" th:value="${searchDTO.searchKeyword}" required class="form-control" placeholder="검색어 입력">
+          </div>
+          <div class="col-sm-5">
+            <select form="searchForm" id="pageSize" name="pageSize" th:value="${searchDTO.pageSize}" onchange="changePageSize()" class="size-select">
+              <option th:each="s : ${ {3, 5, 10, 20} }" th:value="${s}" th:text="${s}" th:selected="${s == searchDTO.pageSize}"></option>
+            </select>
+            <button id="btnSearch" class="btn btn-secondary">Search</button>
+            <button id="btnClear" class="btn btn-info">Clear</button>
+          </div>
+          <input id="pageNum" name="pageNum" type="hidden" th:value="${searchDTO.pageNum}" />
+          <br />
+        </div>
+      </div>
+    </form>
+    <!-- Search Form END -->
+
+    <br />
+    <div class="table-responsive">
+
+      <!-- User List 테이블 START -->
+      <table id="mytable" class="table table-bordred table-striped">
+        <thead>
+          <th scope="col"><input type="checkbox" id="checkall" /></th>
+          <th scope="col" th:text="#{admin.usermgmt.lbl.id}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.membername}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.email}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.age}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.phoneNumber}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.country}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.regDate}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.roles}" />
+          <th scope="col" th:text="#{admin.usermgmt.lbl.enabled}" />
+          <!--/*<th scope="col" th:text="#{admin.usermgmt.lbl.isUsing2FA}" />*/-->
+          <th scope="col" th:text="#{admin.usermgmt.lbl.action}" />
+        </thead>
+        <tbody>
+          <tr th:each="dto, iStat : ${result.DTOs}">
+            <td class="text-center"><input type="checkbox" class="checkthis" /></td>
+            <td class="text-center">[[${dto.id}]]
+            </td>
+            <td class="text-center">[[${dto.membername}]]</td>
+            <td class="text-center">[[${dto.email}]]</td>
+            <td class="text-center">[[${dto.age}]]</td>
+            <td class="text-center">[[${dto.phoneNumber}]]</td>
+            <td class="text-center">[[${dto.country}]]</td>
+            <td class="text-center">[[${#temporals.format(dto.regDate, 'yyyy/MM/dd')}]]</td>
+            <td class="text-center">
+              <p data-placement="top" data-toggle="tooltip" title="역할 수정">
+                <button class="btn btn-primary btn-xs" data-title="역할 수정" data-toggle="modal" data-target="#editRoleModal">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+              </p>
+            </td>
+            <td class="text-center">
+              <a th:if="${dto.enabled == true}" class="fa-regular fa-square-check"
+                th:href="'javascript:activateApiCall(\'' + @{/api/v1/admin/usermgmt/users/{id}/deactivate( id = ${dto.id} )} + '\');'"
+                title="계정 비활성화"></a>
+              <a th:if="${dto.enabled == false}" class="fa-regular fa-square icon-dark"
+                th:href="'javascript:activateApiCall(\'' + @{/api/v1/admin/usermgmt/users/{id}/activate( id = ${dto.id} )} + '\');'"
+                title="계정 활성화"></a>
+            </td>
+            <td class="text-center">
+              <a th:href="@{/view/admin/usermgmt/users/{id}(
+                  id            = ${dto.id},
+                  pageNum       = ${searchDTO.pageNum},
+                  pageSize      = ${searchDTO.pageSize},
+                  searchType    = ${searchDTO.searchType},
+                  searchKeyword = ${searchDTO.searchKeyword} )}"
+                class="fa-regular fa-pen-to-square icon-dark"></a> <!-- 사용자 수정 -->
+              &nbsp;
+              <a th:href="@{/view/admin/usermgmt/users/delete/{id}( id = ${dto.id} )}"
+                th:userName="${dto.membername}"
+                id="btnDelete" title="사용자 삭제" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+            </td>
+          </tr>
+          <tr th:if="${result.DTOs.size == 0}">
+            <td class="text-center" colspan="11">&nbsp;<br/>&nbsp;<br/>조회된 데이터가 없습니다.&nbsp;<br/>&nbsp;<br/>&nbsp;<br/></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- User List 테이블 END -->
+
+      <div class="clearfix"></div>
+
+      <span id="globalError" class="alert alert-danger col-sm-12" style="display:none"></span>
+
+      <!-- 페이징 네이게이션 START -->
+      <ul class="pagination pull-right" th:if="${result.DTOs.size > 0}">
+        <li th:class="${!result.prev} ? disabled">
+          <a th:href="'javascript:fnPagingUsers(' + ${result.start - 1} + ');'" >
+            <span class="glyphicon glyphicon-chevron-left"></span>
+          </a>
+        </li>
+        <li th:if="${result.totalPage > 0}"
+          th:each="pageNumber : ${result.pageList}"
+          th:class="${pageNumber==result.pageNum} ? active">
+          <a th:href="'javascript:fnPagingUsers(' + ${pageNumber} + ');'" th:text=${pageNumber}></a>
+        </li>
+        <li th:class="${!result.next} ? disabled">
+          <a th:href="'javascript:fnPagingUsers(' + ${result.end + 1} + ');'" >
+            <span class="glyphicon glyphicon-chevron-right"></span>
+          </a>
+        </li>
+      </ul>
+      <!-- 페이징 네이게이션 END -->
+
+    </div>
+
+    <br />
+    <div>
+      <a th:href="@{/view/common/sec/registration}">[사용자 등록]</a> [모두 삭제(미구현)]
+    </div>
+
+  </div>
+  <!-- Container END -->
+
+  <!-- User 수정 Modal START -->
+  <div class="modal fade" id="editRoleModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+          </button>
+          <h4 class="modal-title custom_align" id="Heading">사용자 역할 수정 (미구현 샘플 화면)</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <input class="form-control " type="text" placeholder="email">
+          </div>
+          <div class="form-group">
+            <input class="form-control " type="text" placeholder="membername">
+          </div>
+          <div class="form-group">
+            <textarea rows="2" class="form-control" placeholder="이 Modal Form은 샘플입니다."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer ">
+          <button id="btnRoleEdit" type="button" class="btn btn-warning btn-lg" style="width: 100%;">
+            <span class="glyphicon glyphicon-ok-sign"></span> 수정
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- User 수정 Modal END -->
+
+  <script th:inline="javascript">
+
+    // Action URL 정의
+    var actionUrl = [[@{/view/admin/usermgmt/users}]];
+
+    //============================================================================
+    // 페이지에서 구현해야할 필수 Fuction들
+    //============================================================================
+
+    // 초기화 함수
+    var fnInitialize = function() {
+
+      // 페이지 Title 변경
+      $("#menuTitle").text(KSM.application.menus.getMenu('admUsers').title);
+
+    }
+
+    // 이벤트 핸들링
+    var fnHandleEvents = function() {
+
+      // 사용자 항목 선택 checkbox
+      $("#mytable #checkall").click(function() {
+        if ($("#mytable #checkall").is(':checked')) {
+          $("#mytable input[type=checkbox]").each(function() {
+            $(this).prop("checked", true);
+          });
+        }
+        else {
+          $("#mytable input[type=checkbox]").each(function() {
+            $(this).prop("checked", false);
+          });
+        }
+      });
+
+      $("[data-toggle=tooltip]").tooltip();
+
+      // 삭제 button
+      $(".btn-delete").on("click", function(e) {
+        e.preventDefault();
+
+        var link = $(this);
+        var message = "사용자 \<strong\>" + link.attr("userName") + "\<\/strong\>를 정말 삭제하시겠습니까?";
+
+        KSM_DIALOG.confirm({
+              type          : DIALOG_TYPES.DANGER,
+              message       : message,
+              callbackForOk : function() {
+                KSM_CORE.movePage(link.attr("href"));
+              }
+        });
+      });
+
+      // 검색 button
+      $("#btnSearch").on("click", function(e) {
+        e.preventDefault();
+
+        fnPagingUsers('1');
+      });
+
+      // 초기화 button
+      $("#btnClear").on("click", function(e) {
+        e.preventDefault();
+
+        let searchForm = $("#searchForm");
+        // 기본값 세팅
+        searchForm.empty();
+        $('#pageSize').val('3');
+        $('#searchType').val('n');
+        $('#searchKeyword').val('유저');
+        fnPagingUsers('1');
+      });
+
+    }
+
+    // 후처리 함수
+    var fnFinalize = function() {
+      // 필요시 추가
+    }
+
+    //============================================================================
+    // API(Ajax) Call & Callback
+    //============================================================================
+
+    // 계정 활성화/비활성화
+    var activateApiCall = function(actionApiUrl) {
+      console.log("Form Data: \n" + JSON.stringify($("form#mainForm").serializeObject()));
+      console.log("KSM.request.id: \n" + KSM.request.id);
+
+      var jqxhr = KSM_CORE.ajax({
+        url           : actionApiUrl,
+        type          : KSM_CONST.HTTP_PUT_METHOD,
+        success       : fnSaveSuccessCallback,
+        error         : fnSaveErrorCallback
+      });
+    }
+
+    // 저장 성공 callback
+    var fnSaveSuccessCallback = function(data) {
+      // TODO: success 창에서 '닫기' 버튼이 아닌 'X'를 눌렀을 때의 event 처리 필요
+      KSM_DIALOG.success(data.message, function() {
+        // 목록 화면으로 이동
+        $("#searchForm")
+          .attr("action", actionUrl)
+          .attr("method","GET")
+          .submit();
+        }
+      );
+    }
+
+    // 저장 실패 callback
+    var fnSaveErrorCallback = function(data) {
+      showServerValidationErrors(data);
+    }
+
+    //============================================================================
+    // Custom Functions
+    //============================================================================
+
+    var fnPagingUsers = function(pageNum) {
+      $('#pageNum').val(pageNum);
+
+      $("#searchForm")
+        .attr("action", actionUrl)
+        .attr("method","GET")
+        .submit();
+    }
+
+    var fnReadUser = function(userEditUrl) {
+      $("#searchForm")
+        .attr("action", userEditUrl)
+        .attr("method","GET")
+        .submit();
+    }
+
+    function changePageSize() {
+      //
+    }
+
+  </script>
+
+  <!-- End Page Content -->
+</th:block>
+
+</html>

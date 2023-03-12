@@ -1,0 +1,106 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<th:block th:fragment="headFragment">
+  <!-- Begin Head -->
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Project Web Starter Template">
+    <meta name="author" content="Kyungseo.Park@gmail.com">
+
+    <!--/* 랜더링시 content title 태그에 의해 덮어씌워짐 */-->
+    <title>KYUNGSEO.PoC - Project Web Starter Template</title>
+    <!--/* <p data-th-text="'Hello Common Header Page.' + ${headerMsg}"></p> */-->
+
+    <!--/* jQuery */-->
+    <script th:src="@{/vendor/jquery-2.2.4/jquery.min.js}"></script>
+    <!--/*
+    <script th:src="@{/vendor/jquery-3.5.1/jquery.min.js}"></script>
+    */-->
+
+    <!--/* Bootstrap core CSS */-->
+    <link th:href="@{/vendor/bootstrap-3.4.1/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/vendor/bootstrap-3.4.1/js/bootstrap.min.js}"></script>
+    <!--/*
+    <link th:href="@{/vendor/bootstrap-4.5.0/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/vendor/bootstrap-4.5.0/js/bootstrap.min.js}"></script>
+    */-->
+
+    <!--/* font-awesome */-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!--/* Bootstrap Dialog */-->
+    <link th:href="@{/vendor/bootstrap3-dialog-1.35.3/css/bootstrap-dialog.min.css}" rel="stylesheet">
+    <script th:src="@{/vendor/bootstrap3-dialog-1.35.3/js/bootstrap-dialog.min.js}"></script>
+
+    <!--/* Custom styles for this template */-->
+    <!--/*
+    <link th:href="@{/css/common.css}" rel="stylesheet">
+    <link th:href="@{/css/simple-sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/fancy-sidebar.css}" rel="stylesheet">
+    */-->
+    <link th:href="@{/css/circular-tabs.css}" rel="stylesheet">
+
+    <!--/* JavaScript libs */-->
+    <script th:src="@{/vendor/blockui-1.3.3/js/jquery.blockUI.min.js}"></script>
+    <script th:src="@{/vendor/ua-parser-0.7.33/js/ua-parser.min.js}"></script>
+    <!--/*<script th:src="@{/vendor/fingerprint-2.1.5/fingerprint2.min.js}"></script>*/-->
+    <script th:src="@{/vendor/fingerprint-1.8.0/fingerprint2.min.js}"></script>
+    <script th:src="@{/vendor/cryptojs-3.1.2/js/core.js}"></script>
+    <script th:src="@{/vendor/cryptojs-3.1.2/js/sha256.js}"></script>
+    <script th:src="@{/vendor/cryptojs-3.1.2/js/tripledes.js}"></script>
+    <script th:src="@{/vendor/cryptojs-3.1.2/js/mode-ecb.js}"></script>
+
+    <script th:src="@{/vendor/underscore-1.9.1/js/underscore-min.js}"></script>
+    <script th:src="@{/vendor/moment-2.29.1/js/moment.js}"></script>
+
+    <script th:src="@{/vendor/validate-0.13.1/js/validate.min.js}"></script>
+    <!--/*
+    <script th:src="@{/vendor/jquery-validation-1.19.5/jquery.validate.min.js}"></script>
+    <script th:src="@{/vendor/validator-3.3.1/validator.min.js}"></script>
+    */-->
+    <!--/*
+    <script th:src="@{/vendor/pwstrength-bootstrap-3.1.1/pwstrength-bootstrap.min.js}"></script>
+    */-->
+    <script th:src="@{/vendor/pwstrength-bootstrap-3.1.1/pwstrength.js}"></script>
+
+    <!--/* Page level custom scripts: 순서 변경 금지! */-->
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.base.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.constants.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.dialog.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.menu.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.crypto.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.message.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.storage.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.user.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.util.js}"></script>
+    <script th:inline="javascript" th:src="@{/js/ks.mini/ksm.core.js}"></script>
+  </head>
+
+  <!-- End Head -->
+</th:block>
+
+</html>

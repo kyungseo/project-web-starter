@@ -1,0 +1,108 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+        layout:decorate="~{layout/fancysidebar}">
+
+<th:block layout:fragment="content">
+  <!-- Begin Page Content -->
+
+  <!-- Container START -->
+  <div class="col-md-12">
+
+    <h2 id="menuTitle">페이지 타이틀</h2>
+
+    <b>로그인 여부</b> <p th:text="${#authentication.authenticated}"></p>
+    <button sec:authorize="isAnonymous()" type="button" onclick="location.href='/view/common/sec/login'">로그인</button>
+    <button sec:authorize="isAuthenticated()" type="button" onclick="location.href='/api/v1/user/sec/logout'">로그아웃</button>
+    <br /><br />
+
+    <b>Session Object:</b>
+    <p th:text="${session.user}"></p>
+    <p sec:authorize="isAuthenticated()" sec:authentication="principal.membername"></p>
+    <p th:text="${session.user.username}"></p>
+    <p th:text="${#authentication.principal.membername}"></p>
+    <br />
+
+    <b>Principal Object:</b>
+    <div sec:authorize="isAuthenticated()" sec:authentication="principal"></div>
+    <br />
+
+    <b>Roles:</b>
+    <p sec:authorize="hasRole('ADMIN')" th:utext="${adminMessage}">Access to ADMIN section</p>
+    <p sec:authorize="hasRole('STAFF')" th:utext="${staffMessage}">Access to STAFF section</p>
+    <p sec:authorize="hasRole('USER')" th:utext="${userMessage}">Access to USER section</p>
+    <br />
+
+    <b>Authorities:</b>
+    <div sec:authorize="isAuthenticated()" sec:authentication="authorities"></div>
+    <p th:text="${#authentication.authorities}"></p>
+    <br />
+
+    <div sec:authorize="hasAuthority('READ_PRIVILEGE')">이 문장은 'READ_PRIVILEGE' 권한을 갖는 사람에게만 보입니다.</div>
+    <div sec:authorize="hasAuthority('WRITE_PRIVILEGE')">이 문장은 'WRITE_PRIVILEGE' 권한을 갖는 사람에게만 보입니다.</div>
+    <div sec:authorize="hasAuthority('DELETE_PRIVILEGE')">이 문장은 'DELETE_PRIVILEGE' 권한을 갖는 사람에게만 보입니다.</div>
+
+  </div>
+  <!-- Container END -->
+
+  <script th:inline="javascript">
+
+    // Action URL 정의
+    var actionApiUrl = '/api/v1/auth/signin';
+
+    //============================================================================
+    // 페이지에서 구현해야할 필수 Fuction들
+    //============================================================================
+
+    // 초기화 함수
+    var fnInitialize = function() {
+      // 페이지 Title 변경
+      $("#menuTitle").text(KSM.application.menus.getMenu('comSecRoleh').title);
+    }
+
+    // 이벤트 핸들링
+    var fnHandleEvents = function() {
+      //
+    }
+
+    // 후처리 함수
+    var fnFinalize = function() {
+      // 필요시 추가
+    }
+
+    //============================================================================
+    // API(Ajax) Call & Callback
+    //============================================================================
+
+    //============================================================================
+    // Custom Functions
+    //============================================================================
+
+  </script>
+
+  <!-- End Page Content -->
+</th:block>
+
+</html>

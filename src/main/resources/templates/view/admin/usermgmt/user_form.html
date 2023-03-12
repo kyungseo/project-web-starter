@@ -1,0 +1,349 @@
+<!--/* ========================================================================
+  [ Development Templates based on Thymeleaf ]
+  -----------------------------------------------------------------------------
+  Copyright 2023 Kyungseo Park <Kyungseo.Park@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  =============================================================================
+  Author     Date            Description
+  --------   ----------      --------------------------------------------------
+  Kyungseo   2023-03-02      initial version
+  ======================================================================= */-->
+
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+        layout:decorate="~{layout/fancysidebar}">
+
+<th:block layout:fragment="content">
+  <!-- Begin Page Content -->
+
+  <!-- Container START -->
+  <div class="col-md-12">
+
+    <h2 id="menuTitle">사용자 정보</h2>
+
+    <!-- Search Form START -->
+    <form id="searchForm" name="searchForm" th:action="@{/view/admin/usermgmt/users}" method="get">
+      <input id="pageNum" name="pageNum" type="hidden" th:value="${searchDTO.pageNum}" />
+      <input id="pageSize" name="pageSize" type="hidden" th:value="${searchDTO.pageSize}" />
+      <input id="searchType" name="searchType" type="hidden" th:value="${searchDTO.searchType}" />
+      <input id="searchKeyword" name="searchKeyword" type="hidden" th:value="${searchDTO.searchKeyword}" />
+
+      <input id="message" name="message" type="hidden" />
+    </form>
+    <!-- Search Form END -->
+
+    <br /><br />
+
+    <!-- Main Form START -->
+    <form id="mainForm" name="mainForm" method="POST" enctype="utf8" th:object="${userDto}" class="form-horizontal" >
+
+      <!--/*
+        th:field 사용할 경우 id="id", name="id" 자동 삽입되어 편리함
+        단, 값을 formatting 하거나 할 때 th:value 등을 사용해야 하는데, 이때는 id, name을 명기해야하므로
+        혼동되므로 th:field를 사용하지 않도록 한다.
+      */-->
+      <input type="hidden" th:field="*{id}" />
+
+      <div class="p-3">
+        <div class="form-group">
+          <label class="col-sm-2 col-form-label" for="email" th:text="#{admin.usermgmt.lbl.email}" />
+          <div class="col-sm-5">
+            <input id="email" name="email" type="text" th:value="${userDto.email}" class="form-control" placeholder="id@company.com" />
+          </div>
+          <span id="emailError" class="alert alert-danger col-sm-5 messages" style="display:none"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 col-form-label" for="membername" th:text="#{admin.usermgmt.lbl.membername}" />
+          <div class="col-sm-5">
+            <input id="membername" name="membername" type="text" th:value="${userDto.membername}" class="form-control" placeholder="홍길동" />
+          </div>
+          <span id="membernameError" class="alert alert-danger col-sm-5 messages" style="display:none"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 col-form-label" for="age" th:text="#{admin.usermgmt.lbl.age}" />
+          <div class="col-sm-5">
+            <input id="age" name="age" type="text" th:value="${userDto.age}" class="form-control" placeholder="18" />
+          </div>
+          <span id="ageError" class="alert alert-danger col-sm-5 messages" style="display:none"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 col-form-label" for="birthdate" th:text="#{admin.usermgmt.lbl.birthdate}" />
+          <div class="col-sm-5">
+            <input id="birthdate" name="birthdate" type="date" th:value="${userDto.birthdate}" class="form-control" placeholder="YYYY-MM-DD" >
+          </div>
+          <span id="birthdateError" class="alert alert-danger col-sm-5 messages" style="display:none"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 col-form-label" for="phoneNumber" th:text="#{admin.usermgmt.lbl.phoneNumber}" />
+          <div class="col-sm-5">
+            <input id="phoneNumber" name="phoneNumber" type="text" th:value="${userDto.phoneNumber}" class="form-control" placeholder="82-10-1234-4578" />
+          </div>
+          <span id="phoneNumberError" class="alert alert-danger col-sm-5 messages" style="display:none"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 col-form-label" for="country" th:text="#{admin.usermgmt.lbl.country}" />
+          <div class="col-sm-5">
+            <select id="country" name="country" class="form-control">
+              <option th:each="entry : ${countries}" th:value="${entry.key}" th:text="${entry.value}" th:selected="${entry.key == userDto.country}"></option>
+            </select>
+            <!--/*<input type="text" th:field="*{country}" class="form-control" placeholder="Korea" />*/-->
+          </div>
+          <span id="countryError" class="alert alert-danger col-sm-5 messages" style="display:none"></span>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 form-check-label" for="regDate" th:text="#{admin.usermgmt.lbl.regDate}" />
+          <div class="col-sm-5">
+            <input id="regDate" name="regDate" type="text" th:value="${#temporals.format(userDto.regDate, 'yyyy-MM-dd HH:mm:ss')}" class="form-control" readonly />
+          </div>
+          <br />
+          <span id="globalError" class="alert alert-danger col-sm-12" style="display:none"></span>
+        </div>
+
+        <div class="text-center">
+          <input type="button" value="Save" id="btnSave" class="btn btn-primary btn-sm mr-2" />
+          <input type="button" value="Cancel" id="btnCancel" class="btn btn-secondary btn-sm" />
+        </div>
+      </div>
+    </form>
+    <!-- Main Form END -->
+
+  </div>
+  <!-- Container END -->
+
+  <script th:inline="javascript">
+
+    // Action URL 정의
+    var actionApiUrl = [[@{/api/v1/admin/usermgmt/users/update}]];
+    var userListUrl  = [[@{/view/admin/usermgmt/users}]];
+
+    // Validation을 위한 Form 및 Input 정의
+    var mainForm = document.querySelector("form#mainForm");
+    var inputs = document.querySelectorAll("input, textarea, select");
+
+    //============================================================================
+    // 페이지에서 구현해야할 필수 Fuction들
+    //============================================================================
+
+    // 초기화 함수
+    var fnInitialize = function() {
+      // 페이지 Title 변경
+      $("#menuTitle").text(KSM.application.menus.getMenu('admUserForm').title);
+
+      // Main Form Validation 준비
+      prepareFormValidation();
+    }
+
+    // 이벤트 핸들링
+    var fnHandleEvents = function() {
+
+      // 저장 버튼
+      $("#btnSave").on("click", function(e) {
+        e.preventDefault();
+
+        $(".alert").html("").hide();
+        $("#globalError").html("").hide();
+
+        var errors = validate(mainForm, constraints); // Form 검증
+        showErrors(mainForm, errors || {});
+        if (!errors) { // 검증 에러가 없으면 API 호출
+          actionApiUrlCall();
+        }
+        else { // 검증 에러가 있으면...
+          //
+        }
+      });
+
+      // 취소 버튼
+      $("#btnCancel").on("click", function(e) {
+        e.preventDefault();
+        //KSM_CORE.movePage(userListUrl);
+        goToUserList("");
+      });
+
+    } // end fnHandleEvents()
+
+    // 후처리 함수
+    var fnFinalize = function() {
+      // 필요시 추가
+    }
+
+    // ========================================================================
+    // API(Ajax) Call & Callback
+    // ========================================================================
+
+    // 저장(회원 수정)
+    var actionApiUrlCall = function() {
+      //console.log("Form Data: \n" + $("form#mainForm").serialize());
+      //console.log("Form Data: \n" + JSON.stringify($("form#mainForm").serializeObject()));
+      //console.log("KSM.request.id: \n" + KSM.request.id);
+
+      var jqxhr = KSM_CORE.ajax({
+        url           : actionApiUrl,
+        type          : KSM_CONST.HTTP_POST_METHOD,
+        data          : $("form#mainForm").serializeObject(),
+        success       : fnSaveSuccessCallback,
+        error         : fnSaveErrorCallback,
+        loadingEffect : true
+      });
+    }
+
+    // 저장(회원 수정) 성공 callback
+    var fnSaveSuccessCallback = function(data) {
+      /* data 샘플
+      {
+        "state" : 200,
+        "success" : true,
+        "message" : "사용자 수정 완료!",
+        "error" : "",
+        "fieldErrors" : "",
+        "data" : [ ],
+        "timestamp" : "2023-03-09 14:46:46"
+      }
+      */
+
+      if (data.error) {
+        // Server-side 검증에러가 존재할 경우, Exception을 발생시키는 대신
+        // BindingResult errors를 GenericResponseBody에 담아 던진다.
+        // 대신 이때, data.error 값은 true로 세팅되어 client에서 체크할 수 있도록 했다.
+        // 다음 코드를 참고할 것
+        //   > kyungseo.poc.simple.web.site.admin.usermgmt.web.controller.AdmUserRestController.update()
+        // ※ Server-side에서 데이터 검증을 실행하지 않을 경우, 현 분기문은 생략하면 된다.
+        showServerValidationErrors(data);
+      }
+      else {
+        // TODO: success 창에서 '닫기' 버튼이 아닌 'X'를 눌렀을 때의 event 처리 필요
+        KSM_DIALOG.success("사용자 정보를 갱신하였습니다. \<br \/\>\<br \/\>사용자 목록 화면으로 이동합니다.",
+            function() {
+              goToUserList(data.message);
+            }
+        );
+      }
+    }
+
+    // 저장(회원 수정) 실패 callback
+    var fnSaveErrorCallback = function(data) {
+      showServerValidationErrors(data);
+    }
+
+    // ========================================================================
+    // Custom Functions
+    // ========================================================================
+
+    // Form Validation을 위한 Constraints 정의
+    var constraints = {
+      email: {
+        presence: {
+          value: true,
+          message: "^이메일은 필수 항목입니다."
+        },
+        email: {
+          value: true,
+          message: "^잘못된 이메일 형식입니다."
+        }
+      },
+      /*
+      password: {
+        presence: {
+          value: true,
+          message: "^비밀번호는 필수 항목입니다."
+        },
+        length: {
+          minimum: 5,
+          message: "^비밀번호는 최소 5 글자 이상이어야 합니다."
+        }
+      },
+      "confirm-password": {
+        presence: {
+          value: true,
+          message: "^비밀번호(확인)는 필수 항목입니다."
+        },
+        equality: {
+          attribute: "password",
+          message: "^비밀번호가 일치하지 않습니다."
+        }
+      },
+      */
+      membername: {
+        presence: {
+          value: true,
+          message: "^성명은 필수 항목입니다."
+        },
+        length: {
+          minimum: 2,
+          maximum: 20,
+          message: "^성명은 두 글자 이상이어야 합니다."
+        },
+        format: {
+          pattern: "[ㄱ-ㅎㅏ-ㅣ가-힣0-9]+",
+          flags: "i",
+          message: "^성명이 잘못되었습니다."
+        }
+      },
+      birthdate: {
+        presence: {
+          value: true,
+          message: "^생년월일은 필수 항목입니다."
+        },
+        date: {
+          latest: moment().subtract(10, "years"),
+          message: "^이 서비스를 사용하기 위해서는 최소 10 세 이상이어야 합니다."
+        }
+      },
+      country: {
+        presence: {
+          value: true,
+          message: "^국가 선택은 필수 항목입니다."
+        },
+        inclusion: {
+          within: ["KR"],
+          message: "^이 서비스는 '대한민국'만 가능합니다."
+        }
+      },
+      "age": {
+        presence: {
+          value: true,
+          message: "^나이는 필수 항목입니다."
+        },
+        numericality: {
+          onlyInteger: true,
+          greaterThanOrEqualTo: 10,
+          message: "^나이는 숫자만 가능하며, 최소 10 세 이상이어야 합니다."
+        }
+      }
+    };
+
+    // 사용자 목록 화면으로 이동
+    var goToUserList = function(message) {
+      if (message) {
+        $("#message").val(message);
+      }
+      // 조회 화면으로 이동
+      $("form#searchForm")
+        .attr("action", userListUrl)
+        .attr("method", "GET")
+        .submit();
+    }
+
+  </script>
+
+  <!-- End Page Content -->
+</th:block>
+
+</html>

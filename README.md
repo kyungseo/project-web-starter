@@ -37,7 +37,7 @@
 | Others | Lombok 1.18.24, Springdoc-openapi(API 문서 자동화) 1.6.14 |
 
 
-**Spring Boot**는 우선 2.x 버전을 채택하였으며, 추후 3.x로 업그레이드할 계획입니다. **Persistence**는 인증/인가 등 기본 탑재되는 기능의 `jpa`로, 실제 프로젝트 업무시스템 구현은 `mybatis`로 구현할 수 있도록 하였습니다. *- 물론 어느쪽이든 선호하는 방식으로 구현 가능합니다.*
+**Spring Boot**는 우선 2.x 버전을 채택하였으며, 추후 3.x로 업그레이드할 계획입니다. **Persistence**는 인증/인가 등 기본 탑재되는 기능 구현은 `jpa`로, 실제 프로젝트 업무시스템 구현은 `mybatis`로 구현할 수 있도록 하였습니다. *- 물론 어느쪽이든 선호하는 방식으로 구현 가능합니다.*
 
 ### Frontend Dependencies
 
@@ -70,7 +70,7 @@ jQuery는 오래된 라이브러리이지만 여전히 가치 있고, 실무에�
 
 #### Frontend
 * **다양한 Layout 구성**: `Thymeleaf Layout Dialect`를 활용하여 화면별로 상이한 페이지 레이아웃을 적용할 수 있습니다.
-* **동적 UI 구성**: 로그인한 사용자의 역할 및 권한에 따라 메뉴를 동적으로 구성할 수 있으며, 특정 Link, Button 등의 요소들에 대한 접근을 제어할 수 있습니다.
+* **동적 UI 구성**: 로그인한 **사용자의 역할 및 권한**에 따라 메뉴를 동적으로 구성할 수 있으며, 특정 Link, Button 등의 요소들에 대한 접근을 제어할 수 있습니다.
 * **Validation Check**: `validate.js`를 사용하여 API 요청 직전에 손쉽게 데이터에 대한 유효성 체크를 수행할 수 있습니다.
 * **Ajax 호출 표준**: UI에서 API 호출 시 `Option`을 통해 Loading 효과를 주어 화면을 Blocking하거나 `callback` 수행 전,후에 공통의 기능을 처리할 수 있습니다.
 
@@ -159,7 +159,7 @@ project-web-starter/src/main
 
 ### Database 구성
 
-Database 구성은 Option 사항입니다. 기본적으로 `project-web-starter` 프로젝트는 내장된 H2 Database를 사용하도록 구성되어 있으므로 별도의 구성이 필요없습니다. 하지만 만약 H2 대신 MySQL을 사용하고자 한다면 다음과 같이 Database와 User를 생성해야 합니다.
+Database 구성은 Option 사항입니다. 기본적으로 `project-web-starter` 프로젝트는 내장된 H2 Database를 사용하도록 구성되어 있으므로 별도의 구성이 필요 없습니다. 하지만 만약 H2 대신 MariaDB를 사용하고자 한다면 다음과 같이 Database와 User를 생성해야 합니다.
 
 ```sql
 CREATE DATABASE mydatabase DEFAULT CHARACTER SET utf8;
@@ -180,7 +180,7 @@ spring.datasource.ds2.password=password
 
 ### Mail 구성
 
-`project-web-starter`를 구동하게 되면, 새로운 사용자를 등록하거나 비밀번호를 재설정하는 작업을 수행할 때 실제로 email을 전송합니다. 따라서 `src/main/resources/application.properties`에서 관련 설정을 수정해야합니다.
+`project-web-starter`를 구동하게 되면, 새로운 사용자를 등록하거나 비밀번호를 재설정하는 작업을 수행할 때 실제로 email을 전송합니다. 따라서 `src/main/resources/application.properties`에서 관련 설정을 수정해야 합니다.
 
 ````properties
 # [ JavaMail ]
@@ -199,7 +199,7 @@ spring.mail.password=password
 
 사용 중인 IDE에 Clone 또는 Zip 파일로 직접 다운로드 한 프로젝트를 Import하여 바로 실행하면 됩니다.
 
-또한 IDE를 사용하지 않고 `project-web-starter` 프로젝트 디렉토리로 이동하여 다음과 같이 `mvn` 명령을 사용하면 프로젝트를 `build`할 수 있습니다.
+만약 IDE를 사용 환경이 아니라면, `project-web-starter` 프로젝트 디렉토리로 이동한 후 다음과 같이 `mvn` 명령을 사용하면 프로젝트를 `build`할 수 있습니다.
 
 ```bash
 mvn clean install
@@ -209,7 +209,7 @@ mvn clean install
 그리고 Spring Boot 모듈을 실행하려면 프로젝트 디렉토리에서 `mvn spring-boot:run` 명령을 실행하면 됩니다.
 
 ```bash
-./mvnw spring-boot:run   # UNIX/Linux 기반 OS인 경우
+./mvn spring-boot:run    # UNIX/Linux 기반 OS인 경우
 mvnw.cmd spring-boot:run # Windows 기반 OS인 경우
 
 ```
@@ -222,8 +222,7 @@ mvnw.cmd spring-boot:run # Windows 기반 OS인 경우
   * Admin 유저: admin@company.com / password
   * 일반 유저: user001@company.com / password
 * [KYUNGSEO.PoC - API (Swagger UI)](http://localhost:8080/swagger-ui/index.html)
-* [H2 Console](http://localhost:8080/h2)
-  * 유저: sa /
+* [H2 Console](http://localhost:8080/h2) - 비번 없이 `sa`로 접속
 
 
 ## 참고 화면들
@@ -326,6 +325,8 @@ Console 로그인 화면입니다. Driver Class와 JDBC URL을 선택하고 'Use
 
 ## 차후 계획
 
+여유 시간이 있다면 다음 항목들을 진행할 예정입니다.
+
 * 현행 코드의 미비점 지속 업데이트 및 보완
   * 분산 환경 대응
     * 이중화 등 분산환경에서의 Session 공유 처리 (Redis 등)
@@ -333,7 +334,7 @@ Console 로그인 화면입니다. Driver Class와 JDBC URL을 선택하고 'Use
     * 사용자가 Multi-Device를 사용하는 것을 고려하여 장비별 인증정보 매핑
     * 분산 트랜잭션 (2PC)
   * 샘플 추가
-    * 파일업로드, 엑셀, etc
+    * WYSIWYG 에디터, 파일업로드, 엑셀 등등 실무에서 많이 요구되는 요건들 위주...
 * 신규 프로젝트 개발
   * Vue.js 기반의 Stateless 애플리케이션 개발을 위한 표준 템플릿 구축
 

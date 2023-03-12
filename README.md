@@ -195,7 +195,7 @@ spring.mail.password=password
 
 ### Build & Run
 
-이제 모든 준비가 끝났습니다. 
+이제 모든 준비가 끝났습니다.
 
 사용 중인 IDE에 Clone 또는 Zip 파일로 직접 다운로드 한 프로젝트를 Import하여 바로 실행하면 됩니다.
 
@@ -263,7 +263,7 @@ mvnw.cmd spring-boot:run # Windows 기반 OS인 경우
 #### 로그인 및 로그아웃
 
 ![image](/docs/security-login.png)
-로그인 폼입니다. 
+로그인 폼입니다.
 
 2FA 사용으로 설정한 경우 Google OTP 코드를 입력해야합니다. 그렇지 않은 경우 이메일/비밀번호만 입력하면 됩니다.
 
@@ -286,11 +286,11 @@ mvnw.cmd spring-boot:run # Windows 기반 OS인 경우
 <summary>기타 화면 모음</summary>
 
 ![image](/docs/security-pw-reset-form.png)
- 
+
 ![image](/docs/security-pw-reset-mail.png)
- 
+
 ![image](/docs/security-pw-reset-confirm.png)
- 
+
 ![image](/docs/security-session-expired.png)
 
 </details>
@@ -324,31 +324,20 @@ Console 로그인 화면입니다. Driver Class와 JDBC URL을 선택하고 'Use
 
 </details>
 
-## 개발 프로세스
+## 차후 계획
 
-## Appendix
-
-### 미비한 부분
-* 분산트랜잭션
-* 로그인 사용자의 location 및 device 정보 연계 관리 미구현
-* KSM(KyungSeo's Mini) JS
-
-* 웹, 모바일, REST(API) 등의 환경에 공히 적용할 수 있도록 Statless 기반 인증 메커니즘 적용
-  * 사용자가 Multi-Device를 사용하는 것을 고려하여 장비별 인증정보 매핑
-  * Spring Security와 JWT 조합: JWT 장비별 인증 무효화 적용
-* 분산 환경에서의 세션?
-  * 이중화 등 분산환경에서의 Session 공유 처리 (Redis 등)
-  * 1 device 1 session
-  * 분산을 위한 DB 저장 구조 고민 (그 전에 전체 매커니즘 파악)
-* 아키 전반적 코드 표준 정의 및 반영
-
-### 차후 계획
 * 현행 코드의 미비점 지속 업데이트 및 보완
-  * 샘플 추가: 파일업로드, 엑셀, ...
+  * 분산 환경 대응
+    * 이중화 등 분산환경에서의 Session 공유 처리 (Redis 등)
+    * 로그인 사용자의 location 및 device 정보 연계 (1 device 1 session)
+    * 사용자가 Multi-Device를 사용하는 것을 고려하여 장비별 인증정보 매핑
+    * 분산 트랜잭션 (2PC)
+  * 샘플 추가
+    * 파일업로드, 엑셀, etc
 * 신규 프로젝트 개발
-  * Vue.js를 활용한 Advenced Web 프로젝트 추가
+  * Vue.js 기반의 Stateless 애플리케이션 개발을 위한 표준 템플릿 구축
 
-### References
+## References
 
 * [Spring Security Registration Tutorial](http://www.baeldung.com/spring-security-registration)
 * [Spring Data Jpa](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)

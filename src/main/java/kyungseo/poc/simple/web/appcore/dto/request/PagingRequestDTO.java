@@ -28,11 +28,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import groovy.transform.ToString;
 import kyungseo.poc.simple.web.appcore.config.EnvironmentAwareConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author 박경서 (Kyungseo.Park@gmail.com)

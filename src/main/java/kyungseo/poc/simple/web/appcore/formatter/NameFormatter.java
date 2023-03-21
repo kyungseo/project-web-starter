@@ -22,11 +22,11 @@
 
 package kyungseo.poc.simple.web.appcore.formatter;
 
-import org.springframework.format.Formatter;
-import org.thymeleaf.util.StringUtils;
-
 import java.text.ParseException;
 import java.util.Locale;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.Formatter;
 
 /**
  * name(문자열)을 포맷, 공백(' ')을 ','로 대체한 값을 반환

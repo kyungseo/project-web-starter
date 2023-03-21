@@ -26,11 +26,11 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import groovy.transform.ToString;
 import kyungseo.poc.simple.web.appcore.AppConstants;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author 박경서 (Kyungseo.Park@gmail.com)

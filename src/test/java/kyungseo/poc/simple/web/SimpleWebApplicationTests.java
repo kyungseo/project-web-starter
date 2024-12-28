@@ -34,7 +34,7 @@ class SimpleWebApplicationTests {
 
     @Test
     void contextLoads() {
-        //
+        // ...
     }
 
 }
